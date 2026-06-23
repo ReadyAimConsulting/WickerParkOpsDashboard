@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wicker Park — Weekly Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --green-dark:   #3B5323;
+    --green-mid:    #4A6B2A;
+    --green-light:  #EAF3DE;
+    --brown:        #6B4226;
+    --tan-mid:      #E0CEAB;
+    --tan-light:    #F0EBE0;
+    --tan-xlight:   #F5F0E8;
+    --cream:        #FDFAF5;
+    --white:        #FFFFFF;
+    --black:        #1A1A1A;
+    --gray-500:     #555555;
+    --gray-300:     #AAAAAA;
+    --gray-100:     #F4F4F4;
+    --border:       #BFAD8E;
+    --border-light: #E8E0D0;
+    --red-fill:     #FDECEA;
+    --red-text:     #B71C1C;
+    --grn-fill:     #E8F5E9;
+    --grn-text:     #1B5E20;
+    --amb-fill:     #FFF3CD;
+    --amb-text:     #856404;
+    --font:         'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--black);
+    background: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 220px;
+    height: 100vh;
+    background: var(--green-dark);
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-brand h1 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.3;
+  }
+
+  .sidebar-brand p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 3px;
+  }
+
+  .sidebar-week {
+    padding: 0 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-week label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,0.45);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-week select {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--white);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 7px 10px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-week select option { background: #2E4120; color: white; }
+
+  .sidebar-nav { flex: 1; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06); }
+
+  .nav-item.active {
+    color: #FFFFFF;
+    border-left-color: var(--tan-mid);
+    background: rgba(255,255,255,0.1);
+    font-weight: 500;
+  }
+
+  .nav-item .nav-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-icon { opacity: 1; }
+
+  .sidebar-footer {
+    padding: 16px 20px 0;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin-top: 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+    padding: 36px 40px;
+    max-width: 1100px;
+  }
+
+  .page-header {
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--black);
+  }
+
+  .page-header p {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 3px;
+  }
+
+  .compare-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .compare-row select {
+    font-family: var(--font);
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 28px 5px 9px;
+    background: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── METRIC CARDS ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .metric {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-300);
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--black);
+    line-height: 1.1;
+  }
+
+  .metric-sub {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ── SECTION ── */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-300);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-light); background: var(--white); margin-bottom: 24px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+  thead tr { border-bottom: 1px solid var(--border-light); }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--gray-300);
+    white-space: nowrap;
+    background: var(--tan-xlight);
+  }
+
+  th:not(:first-child) { text-align: right; }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--black);
+    white-space: nowrap;
+  }
+
+  td:not(:first-child) { text-align: right; }
+
+  tr:last-child td { border-bottom: none; }
+
+  tbody tr:hover { background: var(--tan-xlight); }
+
+  .total-row td {
+    font-weight: 600;
+    background: var(--tan-xlight);
+    border-top: 1px solid var(--border);
+  }
+
+  .total-row:hover td { background: var(--tan-light); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .badge-grn { background: var(--grn-fill); color: var(--grn-text); }
+  .badge-red { background: var(--red-fill); color: var(--red-text); }
+  .badge-amb { background: var(--amb-fill); color: var(--amb-text); }
+  .badge-neu { background: var(--gray-100); color: var(--gray-500); }
+
+  .pill-red  { background: var(--red-fill); color: var(--red-text); font-weight: 600; border-radius: 4px; padding: 2px 8px; display: inline-block; font-size: 12px; }
+  .pill-grn  { background: var(--grn-fill); color: var(--grn-text); font-weight: 600; border-radius: 4px; padding: 2px 8px; display: inline-block; font-size: 12px; }
+  .pill-amb  { background: var(--amb-fill); color: var(--amb-text); font-weight: 600; border-radius: 4px; padding: 2px 8px; display: inline-block; font-size: 12px; }
+
+  /* ── CHARTS ── */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 800px) { .chart-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .chart-card h3 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-300);
+    margin-bottom: 14px;
+  }
+
+  .chart-wrap { position: relative; width: 100%; height: 220px; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .legend span { display: flex; align-items: center; gap: 5px; }
+
+  .legend-sq {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .legend-line {
+    width: 16px;
+    height: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+    border-radius: 1px;
+  }
+
+  /* ── OBS CARDS ── */
+  .obs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 800px) { .obs-grid { grid-template-columns: 1fr; } }
+
+  .obs-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-left: 3px solid var(--green-dark);
+  }
+
+  .obs-card h3 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--green-dark);
+    margin-bottom: 7px;
+  }
+
+  .obs-card p { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+
+  /* ── MIX BARS ── */
+  .mix-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .mix-bar-label { width: 110px; color: var(--gray-500); font-size: 12px; text-align: right; flex-shrink: 0; }
+
+  .mix-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--tan-xlight);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .mix-bar-fill { height: 100%; border-radius: 5px; }
+
+  .mix-bar-val { width: 80px; font-size: 12px; color: var(--gray-500); }
+
+  /* ── WOW ── */
+  .wow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .wow-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .wow-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-300); margin-bottom: 8px; }
+  .wow-vals  { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .wow-w1    { font-size: 14px; color: var(--gray-300); }
+  .wow-arrow { font-size: 16px; color: var(--gray-300); }
+  .wow-w2    { font-size: 18px; font-weight: 600; color: var(--black); }
+  .wow-chg   { font-size: 12px; margin-top: 6px; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-300);
+    font-size: 14px;
+  }
+
+  .empty svg { margin-bottom: 12px; opacity: 0.3; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; padding: 16px; }
+    .sidebar-brand, .sidebar-week, .sidebar-nav, .sidebar-footer { width: 100%; }
+    .sidebar-nav { display: flex; flex-wrap: wrap; gap: 4px; }
+    .nav-item { border-left: none; border-bottom: 2px solid transparent; padding: 6px 10px; font-size: 12px; }
+    .nav-item.active { border-bottom-color: var(--tan-mid); }
+    .main { margin-left: 0; padding: 20px 16px; }
+  }
+
+  @media print {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .panel { display: block !important; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+<aside class="sidebar" aria-label="Navigation">
+  <div class="sidebar-brand">
+    <h1>Wicker Park</h1>
+    <p>Cheba Hut &mdash; Weekly Analysis</p>
+  </div>
+
+  <div class="sidebar-week">
+    <label for="weekSel">Reporting week</label>
+    <select id="weekSel" aria-label="Select reporting week">
+      <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
+      <option value="w2">Week 2 &mdash; Jun 8&ndash;14</option>
+      <option value="w3" selected>Week 3 &mdash; Jun 15&ndash;21</option>
+    </select>
+    <label for="cmpSel" style="margin-top:10px">Compare to</label>
+    <select id="cmpSel" aria-label="Select comparison week">
+      <option value="none">&mdash; none &mdash;</option>
+      <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
+      <option value="w2" selected>Week 2 &mdash; Jun 8&ndash;14</option>
+      <option value="w3">Week 3 &mdash; Jun 15&ndash;21</option>
+    </select>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Dashboard sections">
+    <div class="nav-item active" data-tab="summary">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Summary
+    </div>
+    <div class="nav-item" data-tab="labor">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Labor
+    </div>
+    <div class="nav-item" data-tab="sales">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12 6 7l3 3 5-7"/></svg>
+      Sales by Day
+    </div>
+    <div class="nav-item" data-tab="mix">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 2v6l4 2"/></svg>
+      Sales Mix
+    </div>
+    <div class="nav-item" data-tab="discounts">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3h10l-1 9H4L3 3z"/><path d="M6 3V2a2 2 0 0 1 4 0v1"/></svg>
+      Discounts
+    </div>
+    <div class="nav-item" data-tab="voids">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/><path d="m5 5 6 6M11 5 5 11"/></svg>
+      Voids
+    </div>
+    <div class="nav-item" data-tab="wow">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 8h3l2-5 3 10 2-5h2"/></svg>
+      Week over Week
+    </div>
+    <div class="nav-item" data-tab="sentiment">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M5.5 9.5s.8 1.5 2.5 1.5 2.5-1.5 2.5-1.5"/><circle cx="6" cy="6.5" r=".75" fill="currentColor" stroke="none"/><circle cx="10" cy="6.5" r=".75" fill="currentColor" stroke="none"/></svg>
+      Sentiment
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    Ready Aim Consulting<br>
+    Updated weekly via Toast exports
+  </div>
+</aside>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<main class="main">
+  <div class="page-header">
+    <div id="pageTitle">
+      <h2>Summary</h2>
+      <p id="pageSubtitle">Week 3 &mdash; June 15&ndash;21, 2026</p>
+    </div>
+    <div class="compare-row" id="compareRow">
+      <span>Compare to</span>
+      <select id="cmpSel2" aria-label="Compare to week">
+        <option value="none">&mdash; none &mdash;</option>
+        <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
+        <option value="w2" selected>Week 2 &mdash; Jun 8&ndash;14</option>
+        <option value="w3">Week 3 &mdash; Jun 15&ndash;21</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="summary" class="panel active"></div>
+  <div id="labor"   class="panel"></div>
+  <div id="sales"   class="panel"></div>
+  <div id="mix"     class="panel"></div>
+  <div id="discounts" class="panel"></div>
+  <div id="voids"   class="panel"></div>
+  <div id="wow"     class="panel"></div>
+  <div id="sentiment" class="panel"></div>
+</main>
+
+<script>
+/* ═══════════════════════ DATA ═══════════════════════ */
+const WEEKS = {
+  w1: {
+    label:'Week 1',
+    dates:'Jun 1\u20137, 2026',
+    netSales:30664.05, orders:1635, avgCheck:18.75,
+    labor:7581.51, laborPct:0.2473, totalHrs:484.67,
+    regHrs:468.51, otHrs:2.16, otPay:28.03,
+    discounts:2429.72, discPct:0.0793,
+    voidTotal:0, voidOrders:0,
+    days:[
+      {d:'Mon',sales:3009.56,orders:157,lpct:0.356},
+      {d:'Tue',sales:2791.93,orders:148,lpct:0.313},
+      {d:'Wed',sales:3039.88,orders:152,lpct:0.308},
+      {d:'Thu',sales:3625.48,orders:192,lpct:0.279},
+      {d:'Fri',sales:8021.41,orders:405,lpct:0.208},
+      {d:'Sat',sales:6351.15,orders:317,lpct:0.192},
+      {d:'Sun',sales:3824.64,orders:264,lpct:0.209},
+    ],
+    roles:[
+      {role:'Crew',         hrs:462.50, pay:7722.50, pct:0.618, otHrs:1.07, otPay:28.03, salaried:false},
+      {role:'Shift Leader', hrs:135.20, pay:2635.00, pct:0.211, otHrs:1.07, otPay:28.03, salaried:false},
+      {role:'Bar Lead',     hrs:62.10,  pay:869.40,  pct:0.070, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Bartender',    hrs:55.80,  pay:703.41,  pct:0.056, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Trainer',      hrs:6.10,   pay:103.70,  pct:0.008, otHrs:0,    otPay:0,     salaried:false},
+      {role:'GM (salaried)',hrs:42.10,  pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
+      {role:'AGM (salaried)',hrs:31.80, pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
+    ],
+    mix:[
+      {ch:'In-Shop',    net:15989.07, grp:'In-House'},
+      {ch:'Bar',        net:193.43,   grp:'In-House'},
+      {ch:'DoorDash',   net:5713.22,  grp:'Delivery'},
+      {ch:'UberEats',   net:3188.72,  grp:'Delivery'},
+      {ch:'GrubHub',    net:1124.80,  grp:'Delivery'},
+      {ch:'Dispatch',   net:999.54,   grp:'Delivery'},
+      {ch:'OLO',        net:3022.67,  grp:'OLO & Catering'},
+      {ch:'ezCater',    net:560.31,   grp:'OLO & Catering'},
+    ],
+    dining:[
+      {opt:'Online Ordering', orders:1002, net:19023.28, disc:578.45, gross:19601.73},
+      {opt:'Dine In',         orders:452,  net:8520.10,  disc:1204.20,gross:9724.30},
+      {opt:'To Go',           orders:163,  net:2857.62,  disc:102.10, gross:2959.72},
+      {opt:'Pick Up',         orders:18,   net:263.05,   disc:0,      gross:263.05},
+    ],
+    discItems:[
+      {name:'Happy Hour',           amt:1107.00, orders:130, cat:'Menu Item'},
+      {name:'Free Nug Card',        amt:205.44,  orders:24,  cat:'Menu Item'},
+      {name:'Manager Comp \u2013 Item', amt:169.33, orders:14, cat:'Menu Item'},
+      {name:'Employee Shift Drink', amt:76.00,   orders:7,   cat:'Menu Item'},
+      {name:'Other Menu Items',     amt:166.05,  orders:22,  cat:'Menu Item'},
+      {name:'Employee Shift Meal',  amt:376.24,  orders:47,  cat:'Check'},
+      {name:'Manager Comp \u2013 Check',amt:198.41, orders:17, cat:'Check'},
+      {name:'Loyalty Reward',       amt:131.25,  orders:29,  cat:'Check'},
+    ],
+    voidItems:[],
+    otEmployees:[
+      {name:'Custer, Teagan', role:'GM', hrs:0,    pay:null,  note:'Salaried'},
+      {name:'King, Matthew',  role:'Shift Leader', hrs:1.07, pay:28.03, note:''},
+    ],
+    obs:[
+      ['Sales Volume','Net sales of $30,664 across 1,635 orders at an $18.75 average check. Friday drove $8,021 \u2014 the highest single day in the dataset. Monday through Thursday ran below $3,650 each.'],
+      ['Labor','Hourly labor at 24.7% of net sales. Monday, Tuesday, and Wednesday all exceeded the 26% threshold. Friday and Saturday were the most efficient days at 20.8% and 19.2% respectively.'],
+      ['Discounts','Total discounts of $2,430 (7.9% of sales). Happy Hour accounts for 45.6% of all discount dollars. Manager comp combined totaled $367.74 across 31 transactions.'],
+      ['Voids','No void detail available for Week 1. Add the Void Details report to the pull list to track weekly void activity.'],
+    ],
+    sentiment: null,
+  },
+  w2: {
+    label:'Week 2',
+    dates:'Jun 8\u201314, 2026',
+    netSales:31361.84, orders:1558, avgCheck:20.13,
+    labor:6992.84, laborPct:0.2230, totalHrs:498.75,
+    regHrs:489.39, otHrs:9.36, otPay:22.23,
+    discounts:1912.27, discPct:0.0610,
+    voidTotal:169.57, voidOrders:21,
+    days:[
+      {d:'Mon',sales:3506.24,orders:163,lpct:0.289},
+      {d:'Tue',sales:3456.24,orders:171,lpct:0.274},
+      {d:'Wed',sales:3217.67,orders:157,lpct:0.258},
+      {d:'Thu',sales:4240.13,orders:219,lpct:0.239},
+      {d:'Fri',sales:6522.61,orders:345,lpct:0.187},
+      {d:'Sat',sales:5923.35,orders:285,lpct:0.192},
+      {d:'Sun',sales:4495.60,orders:218,lpct:0.185},
+    ],
+    roles:[
+      {role:'Crew',         hrs:281.51, pay:4690.57, pct:0.671, otHrs:0.89, otPay:22.23, salaried:false},
+      {role:'Shift Leader', hrs:55.35,  pay:1076.90, pct:0.154, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Bar Lead',     hrs:26.98,  pay:404.70,  pct:0.058, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Bartender',    hrs:64.36,  pay:820.67,  pct:0.117, otHrs:0,    otPay:0,     salaried:false},
+      {role:'GM (salaried)',hrs:48.47,  pay:null,    pct:null,  otHrs:8.47, otPay:null,  salaried:true},
+      {role:'AGM (salaried)',hrs:22.08, pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
+    ],
+    mix:[
+      {ch:'In-Shop',    net:16054.79, grp:'In-House'},
+      {ch:'Bar',        net:127.71,   grp:'In-House'},
+      {ch:'DoorDash',   net:5713.22,  grp:'Delivery'},
+      {ch:'UberEats',   net:3072.86,  grp:'Delivery'},
+      {ch:'GrubHub',    net:945.14,   grp:'Delivery'},
+      {ch:'Dispatch',   net:999.00,   grp:'Delivery'},
+      {ch:'OLO',        net:3888.09,  grp:'OLO & Catering'},
+      {ch:'ezCater',    net:560.31,   grp:'OLO & Catering'},
+    ],
+    dining:[
+      {opt:'Online Ordering', orders:1089, net:20437.96, disc:511.40,gross:20949.36},
+      {opt:'Dine In',         orders:324,  net:6810.42,  disc:988.61,gross:7799.03},
+      {opt:'To Go',           orders:128,  net:3647.52,  disc:118.84,gross:3766.36},
+      {opt:'Pick Up',         orders:17,   net:465.94,   disc:0,      gross:465.94},
+    ],
+    discItems:[
+      {name:'Happy Hour',           amt:955.00,  orders:108, cat:'Menu Item'},
+      {name:'Free Nug Card',        amt:178.22,  orders:21,  cat:'Menu Item'},
+      {name:'Manager Comp \u2013 Item', amt:101.50, orders:9, cat:'Menu Item'},
+      {name:'Employee Shift Drink', amt:56.00,   orders:6,   cat:'Menu Item'},
+      {name:'Other Menu Items',     amt:56.00,   orders:14,  cat:'Menu Item'},
+      {name:'Employee Shift Meal',  amt:312.15,  orders:38,  cat:'Check'},
+      {name:'Manager Comp \u2013 Check',amt:155.00, orders:12, cat:'Check'},
+      {name:'Loyalty Reward',       amt:98.40,   orders:22,  cat:'Check'},
+    ],
+    voidItems:[
+      {reason:'Customer Changed Mind', items:23, amt:121.08},
+      {reason:'Server Error',          items:3,  amt:28.49},
+      {reason:'Testing / Training',    items:5,  amt:20.00},
+    ],
+    otEmployees:[
+      {name:'Custer, Teagan',role:'GM',           hrs:8.47, pay:null,  note:'Salaried \u2014 no OT pay'},
+      {name:'Kier, Hailey',  role:'Crew',          hrs:0.89, pay:22.23, note:''},
+    ],
+    obs:[
+      ['Sales Volume','Net sales of $31,362 across 1,558 orders at a $20.13 average check. Friday and Saturday combined drove 39.7% of weekly revenue. Average check improved $1.38 vs. Week 1 (+7.4%).'],
+      ['Labor','Hourly labor at 22.3% \u2014 a 2.4-point improvement over Week 1. Only Tuesday exceeded the 26% threshold. Saturday and Sunday were the most efficient days at 19.2% and 18.5%.'],
+      ['Discounts','Total discounts of $1,912 (6.1% of sales) \u2014 down $517 vs. Week 1. Happy Hour remains the dominant program. Manager comp combined: $256.50 across 21 transactions.'],
+      ['Voids','$169.57 in voids across 21 orders. Server Error ($28.49) and Testing/Training ($20.00) are the highest-priority categories. Kyle Ringham approved $68.18 across 16 void items.'],
+    ],
+    sentiment: {
+      totalResponses: 40,
+      avgScore: 4.57,
+      fiveStar: 32,
+      fourStar: 4,
+      lowStar: 4,
+      withFeedback: 5,
+      dayParts: [
+        {part:'Lunch (10AM\u20131:59PM)',    responses:17, avg:4.53, five:14, four:1, low:2, feedback:2},
+        {part:'Afternoon (2\u20134:59PM)',   responses:9,  avg:5.00, five:9,  four:0, low:0, feedback:0},
+        {part:'Dinner (5\u20138:59PM)',      responses:7,  avg:4.00, five:3,  four:3, low:1, feedback:2},
+        {part:'Late Night / Other',          responses:7,  avg:4.71, five:6,  four:0, low:1, feedback:1},
+      ],
+      byDay: [
+        {d:'Mon', responses:6,  avg:5.00, five:6, four:0, low:0},
+        {d:'Tue', responses:3,  avg:5.00, five:3, four:0, low:0},
+        {d:'Wed', responses:8,  avg:4.88, five:7, four:1, low:0},
+        {d:'Thu', responses:7,  avg:4.29, five:5, four:1, low:1},
+        {d:'Fri', responses:4,  avg:4.75, five:3, four:1, low:0},
+        {d:'Sat', responses:6,  avg:4.50, five:4, four:1, low:1},
+        {d:'Sun', responses:6,  avg:3.83, five:4, four:0, low:2},
+      ],
+      feedback: [
+        {date:'6/14',score:1,customer:'Dan Holley',    category:'Accuracy',         summary:'Order never received; 27-min hold, no resolution'},
+        {date:'6/13',score:3,customer:'Jack Pollard',  category:'Speed',            summary:'Food great, but 30 min late vs. app estimate'},
+        {date:'6/13',score:4,customer:'Leo Klein',     category:'Product Quality',  summary:'Krispy treat stale; sandwich praised highly'},
+        {date:'6/11',score:4,customer:'John Bagel',    category:'Product Quality',  summary:'No issues; positive visit'},
+        {date:'6/10',score:4,customer:'Jen Freitag',   category:'Product Quality',  summary:'No issues noted; satisfactory experience'},
+      ],
+    },
+  },
+  w3: {
+    label:'Week 3',
+    dates:'Jun 15\u201321, 2026',
+    netSales:31101.18, orders:1553, avgCheck:20.03,
+    labor:6868.59, laborPct:0.2208, totalHrs:484.13,
+    regHrs:417.09, otHrs:2.13, otPay:59.11,
+    discounts:1976.69, discPct:0.0636,
+    voidTotal:382.99, voidOrders:35,
+    days:[
+      {d:'Mon',sales:3149.43,orders:171,lpct:0.2552},
+      {d:'Tue',sales:3254.10,orders:164,lpct:0.2671},
+      {d:'Wed',sales:2857.30,orders:144,lpct:0.2831},
+      {d:'Thu',sales:4664.35,orders:244,lpct:0.2263},
+      {d:'Fri',sales:6503.88,orders:352,lpct:0.1837},
+      {d:'Sat',sales:7373.20,orders:338,lpct:0.1687},
+      {d:'Sun',sales:3298.92,orders:140,lpct:0.2704},
+    ],
+    roles:[
+      {role:'Crew',         hrs:263.20, pay:4407.79, pct:0.6417, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Shift Leader', hrs:59.98,  pay:1163.48, pct:0.1694, otHrs:2.13, otPay:59.11, salaried:false},
+      {role:'Bar Lead',     hrs:30.85,  pay:462.75,  pct:0.0674, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Bartender',    hrs:65.19,  pay:834.57,  pct:0.1215, otHrs:0,    otPay:0,     salaried:false},
+      {role:'GM (salaried)',hrs:29.96,  pay:null,    pct:null,   otHrs:0.29, otPay:null,  salaried:true},
+      {role:'AGM (salaried)',hrs:34.95, pay:null,    pct:null,   otHrs:3.91, otPay:null,  salaried:true},
+    ],
+    mix:[
+      {ch:'In-Shop',      net:12728.36, grp:'In-House'},
+      {ch:'Bar',          net:3894.74,  grp:'In-House'},
+      {ch:'DoorDash',     net:5946.82,  grp:'Delivery'},
+      {ch:'UberEats',     net:3286.79,  grp:'Delivery'},
+      {ch:'GrubHub',      net:722.63,   grp:'Delivery'},
+      {ch:'Dispatch',     net:385.62,   grp:'Delivery'},
+      {ch:'OLO',          net:3926.25,  grp:'OLO & Catering'},
+      {ch:'OLO Catering', net:209.97,   grp:'OLO & Catering'},
+    ],
+    dining:[
+      {opt:'Online Ordering', orders:547,  net:14268.11, disc:156.06, gross:14424.17},
+      {opt:'Dine In',         orders:675,  net:10650.16, disc:1712.36,gross:12362.52},
+      {opt:'To Go',           orders:328,  net:5947.96,  disc:108.27, gross:6056.23},
+      {opt:'Olo Catering',    orders:1,    net:209.97,   disc:0,      gross:209.97},
+      {opt:'Pick Up',         orders:2,    net:24.98,    disc:0,      gross:24.98},
+    ],
+    discItems:[
+      {name:'Happy Hour',           amt:978.75,  orders:95,  cat:'Menu Item'},
+      {name:'Employee Shift Drink', amt:153.00,  orders:7,   cat:'Menu Item'},
+      {name:'Free Nug Card',        amt:114.55,  orders:12,  cat:'Menu Item'},
+      {name:'Manager Comp \u2013 Item', amt:86.94, orders:10, cat:'Menu Item'},
+      {name:'Hash Can Friday',      amt:21.00,   orders:6,   cat:'Menu Item'},
+      {name:'Other Menu Items',     amt:42.75,   orders:9,   cat:'Menu Item'},
+      {name:'Employee Shift Meal',  amt:355.11,  orders:38,  cat:'Check'},
+      {name:'Loyalty Reward',       amt:156.06,  orders:24,  cat:'Check'},
+      {name:'Manager Comp \u2013 Check', amt:68.53, orders:6, cat:'Check'},
+    ],
+    voidItems:[
+      {reason:'Customer Changed Mind', items:45, amt:269.94},
+      {reason:'Server Error',          items:16, amt:89.86},
+      {reason:'Testing / Training',    items:3,  amt:15.00},
+      {reason:'86ed',                  items:2,  amt:8.19},
+    ],
+    otEmployees:[
+      {name:'Custer, Teagan', role:'GM',           hrs:0.29, pay:null,  note:'Salaried \u2014 no OT pay'},
+      {name:'Gant, Devante',  role:'AGM',           hrs:3.91, pay:null,  note:'Salaried \u2014 no OT pay'},
+      {name:'Slattum, Evan',  role:'Shift Leader',  hrs:2.13, pay:59.11, note:''},
+    ],
+    obs:[
+      ['Sales Volume','Net sales of $31,101 across 1,553 orders at a $20.03 average check. Saturday was the strongest day at $7,373 (+24.5% vs. Week 2). Wednesday was the softest at $2,857. Friday and Saturday combined drove 44.6% of weekly revenue.'],
+      ['Labor','Hourly labor at 22.1% of net sales \u2014 a slight improvement from Week 2\u2019s 22.3%. Only Slattum, E. generated billable OT ($59.11, 2.13 hrs). Tuesday, Wednesday, and Sunday all exceeded the 26% threshold, all lower-volume days. Saturday was the most efficient at 16.9%.'],
+      ['Discounts','Total discounts of $1,977 (6.4% of sales), up modestly from Week 2\u2019s $1,912. Happy Hour continues to dominate at $978.75 across 95 orders. Manager comp combined: $155.47 across 16 transactions.'],
+      ['Voids','$382.99 in voids across 35 orders \u2014 more than double Week 2. Campbell Crose had the highest void amount ($153.26, 29 items), concentrated on Monday 6/15. Server Error voids ($89.86, 16 items) are elevated. A new void reason \u201886ed\u2019 appeared this week ($8.19, 2 items), indicating items not available for service.'],
+    ],
+    sentiment: {
+      totalResponses: 29,
+      avgScore: 4.72,
+      fiveStar: 24,
+      fourStar: 4,
+      lowStar: 1,
+      withFeedback: 4,
+      dayParts: [
+        {part:'Lunch (10AM\u20131:59PM)',    responses:14, avg:4.50, five:10, four:3, low:1, feedback:4},
+        {part:'Afternoon (2\u20134:59PM)',   responses:3,  avg:5.00, five:3,  four:0, low:0, feedback:0},
+        {part:'Dinner (5\u20138:59PM)',      responses:8,  avg:5.00, five:8,  four:0, low:0, feedback:0},
+        {part:'Late Night / Other',          responses:4,  avg:4.75, five:3,  four:1, low:0, feedback:0},
+      ],
+      byDay: [
+        {d:'Mon', responses:3,  avg:4.67, five:2, four:1, low:0},
+        {d:'Tue', responses:6,  avg:5.00, five:6, four:0, low:0},
+        {d:'Wed', responses:2,  avg:5.00, five:2, four:0, low:0},
+        {d:'Thu', responses:5,  avg:4.20, five:4, four:0, low:1},
+        {d:'Fri', responses:5,  avg:4.60, five:3, four:2, low:0},
+        {d:'Sat', responses:5,  avg:4.80, five:4, four:1, low:0},
+        {d:'Sun', responses:3,  avg:5.00, five:3, four:0, low:0},
+      ],
+      feedback: [
+        {date:'6/18',score:1,customer:'Brad Neill',        category:'Accuracy',        summary:'Wrong sandwich; ordered Chronic, received meatball'},
+        {date:'6/15',score:4,customer:'Cristina Morales',  category:'Product Quality', summary:'Wrapping quality concerns; staff demeanor positive'},
+        {date:'6/19',score:4,customer:'DeAundria Hodges',  category:'Hospitality',     summary:'Staff attitude; request for friendlier service'},
+        {date:'6/19',score:4,customer:'Bojana Walker',     category:'Product Quality', summary:'Score only; no substantive feedback'},
+      ],
+    },
+  },
+};
+
+const TAB_LABELS = {
+  summary:'Summary', labor:'Labor', sales:'Sales by Day',
+  mix:'Sales Mix', discounts:'Discounts', voids:'Voids',
+  wow:'Week over Week', sentiment:'Customer Sentiment'
+};
+
+/* ═══════════════════════ HELPERS ═══════════════════════ */
+const $  = id => document.getElementById(id);
+const f$ = n  => '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fn = n  => Number(n).toLocaleString('en-US');
+const fp = n  => (n*100).toFixed(1)+'%';
+
+function badge(w1v, w2v, lowerGood){
+  if(w1v == null) return '';
+  const diff = w2v - w1v;
+  const pct  = w1v ? (diff/w1v*100) : 0;
+  const good = lowerGood ? diff < 0 : diff > 0;
+  const cls  = good ? 'badge-grn' : (diff === 0 ? 'badge-neu' : 'badge-red');
+  const sign = diff > 0 ? '+' : '';
+  return `<span class="badge ${cls}">${sign}${pct.toFixed(1)}%</span>`;
+}
+
+function laborPill(pct){
+  if(pct > 0.26) return `<span class="pill-red">${fp(pct)}</span>`;
+  if(pct > 0.22) return `<span class="pill-amb">${fp(pct)}</span>`;
+  return `<span class="pill-grn">${fp(pct)}</span>`;
+}
+
+let charts = {};
+function destroyCharts(){
+  Object.values(charts).forEach(c=>{ try{ c.destroy(); }catch(e){} });
+  charts = {};
+}
+
+/* ═══════════════════════ RENDERERS ═══════════════════════ */
+
+function renderSummary(wk, cmp){
+  const w = WEEKS[wk];
+  const p = cmp !== 'none' ? WEEKS[cmp] : null;
+  const metrics = [
+    {label:'Net Sales',    val:f$(w.netSales),   sub: p ? badge(p.netSales,w.netSales,false)+' vs '+p.label : f$(w.netSales/w.orders)+' avg check'},
+    {label:'Total Orders', val:fn(w.orders),      sub: p ? badge(p.orders,w.orders,false)+' vs '+p.label : ''},
+    {label:'Avg Check',    val:f$(w.avgCheck),    sub: p ? badge(p.avgCheck,w.avgCheck,false)+' vs '+p.label : ''},
+    {label:'Labor Cost',   val:f$(w.labor),       sub: p ? badge(p.labor,w.labor,true)+' vs '+p.label : fp(w.laborPct)+' of sales'},
+    {label:'Labor %',      val:fp(w.laborPct),    sub: p ? badge(p.laborPct,w.laborPct,true)+' vs '+p.label : (w.laborPct>0.26?'<span class="badge badge-red">Above 26% goal</span>':(w.laborPct>0.22?'<span class="badge badge-amb">22%\u201326% target range</span>':'<span class="badge badge-grn">At or below 22%</span>'))},
+    {label:'Discounts',    val:f$(w.discounts),   sub: p ? badge(p.discounts,w.discounts,true)+' vs '+p.label : fp(w.discPct)+' of sales'},
+  ];
+  let h = '<div class="metrics">';
+  metrics.forEach(m => {
+    h += `<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.val}</div><div class="metric-sub">${m.sub||''}</div></div>`;
+  });
+  h += '</div>';
+  h += '<div class="obs-grid">';
+  w.obs.forEach(([title, text]) => {
+    h += `<div class="obs-card"><h3>${title}</h3><p>${text}</p></div>`;
+  });
+  h += '</div>';
+  $('summary').innerHTML = h;
+}
+
+function renderLabor(wk){
+  const w = WEEKS[wk];
+  let h = `<div class="metrics">
+    <div class="metric"><div class="metric-label">Hourly Labor Cost</div><div class="metric-value">${f$(w.labor)}</div><div class="metric-sub">${fp(w.laborPct)} of net sales</div></div>
+    <div class="metric"><div class="metric-label">Total Hours</div><div class="metric-value">${w.totalHrs.toFixed(1)}</div><div class="metric-sub">Reg: ${w.regHrs.toFixed(1)} &nbsp;|&nbsp; OT: ${w.otHrs.toFixed(2)}</div></div>
+    <div class="metric"><div class="metric-label">OT Pay (hourly only)</div><div class="metric-value">${f$(w.otPay)}</div><div class="metric-sub">${w.otHrs.toFixed(2)} OT hours</div></div>
+  </div>`;
+
+  h += '<div class="chart-grid">';
+  h += `<div class="chart-card"><h3>Labor % by day</h3>
+    <div class="legend"><span><span class="legend-sq" style="background:#3B5323"></span>Labor %</span><span><span class="legend-line" style="background:#B71C1C"></span>22% goal</span></div>
+    <div class="chart-wrap"><canvas id="laborBarChart" role="img" aria-label="Bar chart showing labor percentage by day of week with 22% goal line">Labor % by day.</canvas></div>
+  </div>`;
+  h += `<div class="chart-card"><h3>Labor by role (% of hourly cost)</h3>
+    <div class="chart-wrap"><canvas id="laborDonutChart" role="img" aria-label="Donut chart of labor cost by role">Labor cost by role.</canvas></div>
+  </div>`;
+  h += '</div>';
+
+  h += '<p class="section-title">Labor by role</p>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Role</th><th>Hours</th><th>Labor Cost</th><th>% of Labor</th><th>OT Hours</th><th>OT Pay</th></tr></thead><tbody>';
+  const hourlyRoles = w.roles.filter(r=>!r.salaried);
+  hourlyRoles.forEach(r => {
+    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : '&mdash;';
+    const otPCell = r.otPay > 0 ? `<span class="badge badge-amb">${f$(r.otPay)}</span>` : '&mdash;';
+    h += `<tr><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td>${f$(r.pay)}</td><td>${fp(r.pct)}</td><td>${otHCell}</td><td>${otPCell}</td></tr>`;
+  });
+  const totH = hourlyRoles.reduce((s,r)=>s+r.hrs,0);
+  h += `<tr class="total-row"><td>Total (hourly)</td><td>${totH.toFixed(1)}</td><td>${f$(w.labor)}</td><td>100%</td><td>${w.otHrs.toFixed(2)}</td><td>${f$(w.otPay)}</td></tr>`;
+  w.roles.filter(r=>r.salaried).forEach(r => {
+    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : '&mdash;';
+    h += `<tr style="opacity:.6"><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td><em style="color:#aaa">Salaried</em></td><td>&mdash;</td><td>${otHCell}</td><td>&mdash;</td></tr>`;
+  });
+  h += '</tbody></table></div>';
+
+  if(w.otEmployees.length){
+    h += '<p class="section-title">Overtime by employee</p>';
+    h += '<div class="table-wrap"><table><thead><tr><th>Employee</th><th>Role</th><th>OT Hours</th><th>OT Pay</th><th>Notes</th></tr></thead><tbody>';
+    w.otEmployees.forEach(e => {
+      const pay = e.pay != null ? `<span class="badge badge-amb">${f$(e.pay)}</span>` : '<em style="color:#aaa">N/A (salaried)</em>';
+      const hrs = e.hrs > 0 ? `<span class="badge badge-amb">${e.hrs.toFixed(2)}</span>` : '&mdash;';
+      h += `<tr><td><strong>${e.name}</strong></td><td>${e.role}</td><td>${hrs}</td><td>${pay}</td><td style="color:#888;font-style:italic">${e.note}</td></tr>`;
+    });
+    h += '</tbody></table></div>';
+  }
+
+  $('labor').innerHTML = h;
+
+  const labels = w.days.map(d=>d.d);
+  const pcts   = w.days.map(d=>parseFloat((d.lpct*100).toFixed(1)));
+  const fills  = pcts.map(p => p>26 ? '#FDECEA' : (p>22 ? '#FFF3CD' : '#E8F5E9'));
+  const borders= pcts.map(p => p>26 ? '#B71C1C' : (p>22 ? '#856404' : '#1B5E20'));
+
+  charts.laborBar = new Chart($('laborBarChart'),{
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'Labor %', data:pcts, backgroundColor:fills, borderColor:borders, borderWidth:1.5, borderRadius:3},
+      {label:'22% Goal', data:Array(7).fill(22), type:'line', borderColor:'#B71C1C', borderWidth:2, pointRadius:0, borderDash:[5,3], tension:0}
+    ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'%'}}},
+      scales:{y:{min:0,max:40,ticks:{callback:v=>v+'%',stepSize:10},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}
+  });
+
+  const donutLabels = hourlyRoles.map(r=>r.role);
+  const donutData   = hourlyRoles.map(r=>parseFloat(r.pay.toFixed(2)));
+  const donutColors = ['#3B5323','#6B4226','#A0844A','#C4A26A','#E0CEAB'];
+  charts.laborDonut = new Chart($('laborDonutChart'),{
+    type:'doughnut',
+    data:{labels:donutLabels, datasets:[{data:donutData, backgroundColor:donutColors.slice(0,donutLabels.length), borderWidth:2, borderColor:'#FFFFFF'}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{legend:{position:'right', labels:{font:{size:11},boxWidth:10,padding:8}},
+      tooltip:{callbacks:{label:c=>`${c.label}: ${f$(c.parsed)} (${fp(c.parsed/w.labor)})`}}}}
+  });
+}
+
+function renderSales(wk){
+  const w = WEEKS[wk];
+  let h = '<div class="section-title">Sales & labor by day</div>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Day</th><th>Net Sales</th><th>Orders</th><th>Avg Check</th><th>Labor %</th></tr></thead><tbody>';
+  w.days.forEach(d => {
+    h += `<tr><td><strong>${d.d}</strong></td><td>${f$(d.sales)}</td><td>${fn(d.orders)}</td><td>${f$(d.sales/d.orders)}</td><td>${laborPill(d.lpct)}</td></tr>`;
+  });
+  h += `<tr class="total-row"><td>Total / Avg</td><td>${f$(w.netSales)}</td><td>${fn(w.orders)}</td><td>${f$(w.avgCheck)}</td><td>${fp(w.laborPct)}</td></tr>`;
+  h += '</tbody></table></div>';
+
+  h += '<div class="chart-grid">';
+  h += `<div class="chart-card"><h3>Net sales by day</h3>
+    <div class="chart-wrap"><canvas id="salesBarChart" role="img" aria-label="Bar chart of net sales by day of week">Net sales by day.</canvas></div>
+  </div>`;
+  h += `<div class="chart-card"><h3>Net sales vs. labor %</h3>
+    <div class="legend"><span><span class="legend-sq" style="background:#E0CEAB"></span>Sales (normalized)</span><span><span class="legend-sq" style="background:#3B5323"></span>Labor %</span></div>
+    <div class="chart-wrap"><canvas id="salesComboChart" role="img" aria-label="Line chart comparing normalized sales and labor percentage by day">Sales vs labor %.</canvas></div>
+  </div>`;
+  h += '</div>';
+
+  $('sales').innerHTML = h;
+
+  const labels   = w.days.map(d=>d.d);
+  const salesVals= w.days.map(d=>parseFloat(d.sales.toFixed(2)));
+  const fills    = w.days.map(d=>['Fri','Sat'].includes(d.d)?'#3B5323':'#E0CEAB');
+  charts.salesBar = new Chart($('salesBarChart'),{
+    type:'bar',
+    data:{labels, datasets:[{label:'Net Sales', data:salesVals, backgroundColor:fills, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>f$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}
+  });
+
+  const maxS = Math.max(...w.days.map(d=>d.sales));
+  charts.salesCombo = new Chart($('salesComboChart'),{
+    type:'line',
+    data:{labels, datasets:[
+      {label:'Sales (norm.)', data:w.days.map(d=>parseFloat((d.sales/maxS).toFixed(3))), borderColor:'#6B4226', backgroundColor:'rgba(224,206,171,0.2)', borderWidth:2, pointRadius:4, pointBackgroundColor:'#6B4226', fill:true, tension:0.3},
+      {label:'Labor %',       data:w.days.map(d=>parseFloat(d.lpct.toFixed(3))),         borderColor:'#3B5323', borderWidth:2, pointRadius:4, pointBackgroundColor:'#3B5323', fill:false, tension:0.3}
+    ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{
+        if(c.datasetIndex===0) return 'Sales: '+f$(w.days[c.dataIndex].sales);
+        return 'Labor: '+fp(w.days[c.dataIndex].lpct);
+      }}}},
+      scales:{y:{min:0,max:1.1,ticks:{callback:v=>Math.round(v*100)+'%'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}
+  });
+}
+
+function renderMix(wk){
+  const w = WEEKS[wk];
+  const GROUPS = ['In-House','Delivery','OLO & Catering'];
+  const COLORS  = {'In-House':'#3B5323','Delivery':'#6B4226','OLO & Catering':'#A0844A'};
+
+  let h = '<div class="chart-grid">';
+  h += `<div class="chart-card"><h3>Channel mix</h3>
+    <div class="chart-wrap"><canvas id="mixDonut" role="img" aria-label="Donut chart showing sales by channel group">Channel mix.</canvas></div>
+  </div>`;
+
+  h += '<div class="chart-card"><h3>Revenue by channel</h3>';
+  const grpTotals = {};
+  GROUPS.forEach(g => { grpTotals[g] = w.mix.filter(r=>r.grp===g).reduce((s,r)=>s+r.net,0); });
+  const maxGrp = Math.max(...Object.values(grpTotals));
+  GROUPS.forEach(g => {
+    const rows = w.mix.filter(r=>r.grp===g && r.net>0);
+    h += `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:6px">${g}</div>`;
+    rows.forEach(r => {
+      h += `<div class="mix-bar-row"><span class="mix-bar-label">${r.ch}</span>
+        <div class="mix-bar-track"><div class="mix-bar-fill" style="width:${(r.net/maxGrp*100).toFixed(1)}%;background:${COLORS[g]}"></div></div>
+        <span class="mix-bar-val">${f$(r.net)}</span></div>`;
+    });
+    h += `<div class="mix-bar-row" style="margin-top:2px"><span class="mix-bar-label" style="font-weight:600;color:#555">Subtotal</span><div class="mix-bar-track"><div class="mix-bar-fill" style="width:${(grpTotals[g]/maxGrp*100).toFixed(1)}%;background:${COLORS[g]};opacity:.4"></div></div><span class="mix-bar-val" style="font-weight:600">${f$(grpTotals[g])}</span></div>`;
+    h += '</div>';
+  });
+  h += '</div></div>';
+
+  h += '<div class="section-title">Dining options</div>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Option</th><th>Orders</th><th>Net Sales</th><th>% of Sales</th><th>Discounts</th><th>Gross Sales</th></tr></thead><tbody>';
+  w.dining.forEach(d => {
+    h += `<tr><td>${d.opt}</td><td>${fn(d.orders)}</td><td>${f$(d.net)}</td><td>${fp(d.net/w.netSales)}</td><td>${f$(d.disc)}</td><td>${f$(d.gross)}</td></tr>`;
+  });
+  const totNet=w.dining.reduce((s,d)=>s+d.net,0); const totDisc=w.dining.reduce((s,d)=>s+d.disc,0); const totGross=w.dining.reduce((s,d)=>s+d.gross,0); const totOrd=w.dining.reduce((s,d)=>s+d.orders,0);
+  h += `<tr class="total-row"><td>Total</td><td>${fn(totOrd)}</td><td>${f$(totNet)}</td><td>100%</td><td>${f$(totDisc)}</td><td>${f$(totGross)}</td></tr>`;
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:12px;color:#888;margin-top:8px">Online Ordering aggregates all delivery platforms. Use revenue center breakdown above for platform-level detail.</p>';
+
+  $('mix').innerHTML = h;
+
+  const donutData   = GROUPS.map(g=>parseFloat(grpTotals[g].toFixed(2)));
+  const donutColors = GROUPS.map(g=>COLORS[g]);
+  charts.mixDonut = new Chart($('mixDonut'),{
+    type:'doughnut',
+    data:{labels:GROUPS, datasets:[{data:donutData, backgroundColor:donutColors, borderWidth:3, borderColor:'#FFFFFF'}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{legend:{position:'bottom', labels:{font:{size:12},boxWidth:10,padding:12}},
+      tooltip:{callbacks:{label:c=>`${c.label}: ${f$(c.parsed)} (${fp(c.parsed/w.netSales)})`}}}}
+  });
+}
+
+function renderDiscounts(wk){
+  const w = WEEKS[wk];
+  const menuItems  = w.discItems.filter(d=>d.cat==='Menu Item');
+  const checkItems = w.discItems.filter(d=>d.cat==='Check');
+  const menuTotal  = menuItems.reduce((s,d)=>s+d.amt,0);
+  const checkTotal = checkItems.reduce((s,d)=>s+d.amt,0);
+
+  let h = `<div class="metrics">
+    <div class="metric"><div class="metric-label">Total Discounts</div><div class="metric-value">${f$(w.discounts)}</div><div class="metric-sub">${fp(w.discPct)} of net sales</div></div>
+    <div class="metric"><div class="metric-label">Menu Item Discounts</div><div class="metric-value">${f$(menuTotal)}</div><div class="metric-sub">${fp(menuTotal/w.netSales)} of sales</div></div>
+    <div class="metric"><div class="metric-label">Check Discounts</div><div class="metric-value">${f$(checkTotal)}</div><div class="metric-sub">${fp(checkTotal/w.netSales)} of sales</div></div>
+  </div>`;
+
+  h += '<div class="chart-grid">';
+  h += `<div class="chart-card"><h3>Discounts by program</h3>
+    <div class="chart-wrap"><canvas id="discChart" role="img" aria-label="Horizontal bar chart of discount amounts by program">Discounts by program.</canvas></div>
+  </div>`;
+  h += `<div class="chart-card"><h3>Category split</h3>
+    <div class="chart-wrap"><canvas id="discDonut" role="img" aria-label="Donut chart showing menu item vs check discount split">Discount category split.</canvas></div>
+  </div>`;
+  h += '</div>';
+
+  [[checkItems,'Check-Level Discounts'],[menuItems,'Menu Item Discounts']].forEach(([items,label]) => {
+    h += `<p class="section-title">${label}</p>`;
+    h += '<div class="table-wrap"><table><thead><tr><th>Discount</th><th>Orders</th><th>Amount</th><th>% of Sales</th></tr></thead><tbody>';
+    items.sort((a,b)=>b.amt-a.amt).forEach(d => {
+      h += `<tr><td>${d.name}</td><td>${fn(d.orders)}</td><td>${f$(d.amt)}</td><td>${fp(d.amt/w.netSales)}</td></tr>`;
+    });
+    const sub = items.reduce((s,d)=>s+d.amt,0);
+    const ord = items.reduce((s,d)=>s+d.orders,0);
+    h += `<tr class="total-row"><td>Subtotal</td><td>${fn(ord)}</td><td>${f$(sub)}</td><td>${fp(sub/w.netSales)}</td></tr>`;
+    h += '</tbody></table></div>';
+  });
+
+  $('discounts').innerHTML = h;
+
+  const allItems  = [...w.discItems].sort((a,b)=>b.amt-a.amt);
+  charts.discBar = new Chart($('discChart'),{
+    type:'bar',
+    data:{labels:allItems.map(d=>d.name.length>20?d.name.slice(0,18)+'\u2026':d.name),
+      datasets:[{label:'Amount', data:allItems.map(d=>parseFloat(d.amt.toFixed(2))),
+        backgroundColor:allItems.map(d=>d.cat==='Menu Item'?'#3B5323':'#6B4226'), borderRadius:3}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>f$(c.parsed.x)}}},
+      scales:{x:{ticks:{callback:v=>'$'+v},grid:{color:'rgba(0,0,0,0.04)'}},y:{grid:{display:false}}}}
+  });
+  charts.discDonut = new Chart($('discDonut'),{
+    type:'doughnut',
+    data:{labels:['Menu Item','Check'],datasets:[{data:[parseFloat(menuTotal.toFixed(2)),parseFloat(checkTotal.toFixed(2))],backgroundColor:['#3B5323','#6B4226'],borderWidth:3,borderColor:'#FFFFFF'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{font:{size:12},boxWidth:10,padding:12}},
+      tooltip:{callbacks:{label:c=>`${c.label}: ${f$(c.parsed)} (${fp(c.parsed/w.discounts)})`}}}}
+  });
+}
+
+function renderVoids(wk){
+  const w = WEEKS[wk];
+  if(!w.voidTotal){
+    $('voids').innerHTML = `<div class="empty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 9h.01M15 15h.01"/><path d="M9 15s1.5-2 3-2 3 2 3 2"/></svg>
+      <p>No void detail available for this week.</p>
+      <p style="margin-top:6px;font-size:12px">Add the Void Details report to your Toast pull list to track weekly void activity.</p>
+    </div>`;
+    return;
+  }
+  let h = `<div class="metrics">
+    <div class="metric"><div class="metric-label">Total Void Amount</div><div class="metric-value">${f$(w.voidTotal)}</div><div class="metric-sub">${fp(w.voidTotal/w.netSales)} of net sales</div></div>
+    <div class="metric"><div class="metric-label">Void Orders</div><div class="metric-value">${w.voidOrders}</div></div>
+    <div class="metric"><div class="metric-label">Void Items</div><div class="metric-value">${w.voidItems.reduce((s,v)=>s+v.items,0)}</div></div>
+  </div>`;
+
+  h += '<div class="section-title">Voids by reason</div>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Reason</th><th>Items</th><th>Amount</th><th>% of Voids</th></tr></thead><tbody>';
+  w.voidItems.forEach(v => {
+    const isTrain = v.reason.includes('Training');
+    const isErr   = v.reason.includes('Error');
+    const pill = isTrain ? `<span class="badge badge-amb">${v.reason}</span>` : (isErr ? `<span class="badge badge-red">${v.reason}</span>` : v.reason);
+    h += `<tr><td>${pill}</td><td>${v.items}</td><td>${f$(v.amt)}</td><td>${fp(v.amt/w.voidTotal)}</td></tr>`;
+  });
+  h += `<tr class="total-row"><td>Total</td><td>${w.voidItems.reduce((s,v)=>s+v.items,0)}</td><td>${f$(w.voidTotal)}</td><td>100%</td></tr>`;
+  h += '</tbody></table></div>';
+
+  h += `<div class="chart-card" style="margin-bottom:24px"><h3 style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-bottom:14px">Void breakdown</h3>
+    <div class="chart-wrap" style="height:180px"><canvas id="voidChart" role="img" aria-label="Donut chart of void amounts by reason">Void breakdown.</canvas></div>
+  </div>`;
+
+  h += '<p style="font-size:13px;color:#555;line-height:1.6;padding:14px 16px;background:var(--tan-xlight);border-radius:8px;border-left:3px solid #3B5323">';
+  h += '<strong>Key flag:</strong> Kyle Ringham approved the most voids by dollar value ($68.18 across 16 items). ';
+  h += 'Testing/Training voids ($20.00) indicate possible staff training or system testing outside normal hours &mdash; the Trace Alchin/Skyy Gant pattern at 2:36 AM on 6/14 should be reviewed. ';
+  h += 'Server Error voids ($28.49) represent controllable loss from order entry mistakes.</p>';
+
+  $('voids').innerHTML = h;
+
+  const colors = ['#E0CEAB','#B71C1C','#856404'];
+  charts.voidChart = new Chart($('voidChart'),{
+    type:'doughnut',
+    data:{labels:w.voidItems.map(v=>v.reason), datasets:[{data:w.voidItems.map(v=>parseFloat(v.amt.toFixed(2))), backgroundColor:colors, borderWidth:3, borderColor:'#FFFFFF'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'right',labels:{font:{size:11},boxWidth:10,padding:8}},
+      tooltip:{callbacks:{label:c=>`${c.label}: ${f$(c.parsed)} (${fp(c.parsed/w.voidTotal)})`}}}}
+  });
+}
+
+function renderWoW(wk, cmp){
+  if(cmp==='none'){
+    $('wow').innerHTML = '<div class="empty"><p>Select a comparison week using the dropdown above.</p></div>';
+    return;
+  }
+  const w = WEEKS[wk]; const p = WEEKS[cmp];
+  const rows = [
+    {label:'Net Sales',    w1v:p.netSales,   w2v:w.netSales,   fmt:f$,   lG:false},
+    {label:'Orders',       w1v:p.orders,      w2v:w.orders,     fmt:fn,   lG:false},
+    {label:'Avg Check',    w1v:p.avgCheck,    w2v:w.avgCheck,   fmt:v=>f$(v), lG:false},
+    {label:'Labor Cost',   w1v:p.labor,       w2v:w.labor,      fmt:f$,   lG:true},
+    {label:'Labor %',      w1v:p.laborPct,    w2v:w.laborPct,   fmt:fp,   lG:true},
+    {label:'Discounts',    w1v:p.discounts,   w2v:w.discounts,  fmt:f$,   lG:true},
+    {label:'Discount %',   w1v:p.discPct,     w2v:w.discPct,    fmt:fp,   lG:true},
+    {label:'Voids',        w1v:p.voidTotal,   w2v:w.voidTotal,  fmt:f$,   lG:true},
+  ];
+
+  let h = '<div class="wow-grid">';
+  rows.forEach(r => {
+    const diff = r.w2v - r.w1v;
+    const pct  = r.w1v ? diff/r.w1v*100 : 0;
+    const good = r.lG ? diff < 0 : diff > 0;
+    const cls  = good ? 'badge-grn' : (diff===0 ? 'badge-neu' : 'badge-red');
+    const sign = diff > 0 ? '+' : '';
+    h += `<div class="wow-card">
+      <div class="wow-label">${r.label}</div>
+      <div class="wow-vals"><span class="wow-w1">${r.fmt(r.w1v)}</span><span class="wow-arrow">&rarr;</span><span class="wow-w2">${r.fmt(r.w2v)}</span></div>
+      <div class="wow-chg"><span class="badge ${cls}">${sign}${pct.toFixed(1)}%</span></div>
+    </div>`;
+  });
+  h += '</div>';
+
+  h += '<div class="chart-grid">';
+  h += `<div class="chart-card"><h3>Sales by day &mdash; both weeks</h3>
+    <div class="legend"><span><span class="legend-sq" style="background:#E0CEAB"></span>${p.label}</span><span><span class="legend-sq" style="background:#3B5323"></span>${w.label}</span></div>
+    <div class="chart-wrap"><canvas id="wowSalesChart" role="img" aria-label="Grouped bar chart comparing net sales by day for two weeks">Week over week sales by day.</canvas></div>
+  </div>`;
+  h += `<div class="chart-card"><h3>Labor % by day &mdash; both weeks</h3>
+    <div class="legend"><span><span class="legend-sq" style="background:#A0844A"></span>${p.label}</span><span><span class="legend-sq" style="background:#3B5323"></span>${w.label}</span><span><span class="legend-line" style="background:#B71C1C"></span>22% goal</span></div>
+    <div class="chart-wrap"><canvas id="wowLaborChart" role="img" aria-label="Line chart comparing labor percentage by day for two weeks">Week over week labor %.</canvas></div>
+  </div>`;
+  h += '</div>';
+
+  h += '<p class="section-title">Day-by-day sales detail</p>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Day</th><th>'+p.label+' Sales</th><th>'+w.label+' Sales</th><th>Change $</th><th>Change %</th><th>'+p.label+' Labor %</th><th>'+w.label+' Labor %</th></tr></thead><tbody>';
+  w.days.forEach((wd, i) => {
+    const pd = p.days[i];
+    const salesDiff = wd.sales - pd.sales;
+    const salesPct  = pd.sales ? salesDiff/pd.sales*100 : 0;
+    const good = salesDiff > 0;
+    const cls  = good ? 'badge-grn' : 'badge-red';
+    const sign = salesDiff > 0 ? '+' : '';
+    h += `<tr><td><strong>${wd.d}</strong></td><td>${f$(pd.sales)}</td><td>${f$(wd.sales)}</td>
+      <td><span class="badge ${cls}">${sign}${f$(salesDiff)}</span></td>
+      <td><span class="badge ${cls}">${sign}${salesPct.toFixed(1)}%</span></td>
+      <td>${laborPill(pd.lpct)}</td><td>${laborPill(wd.lpct)}</td></tr>`;
+  });
+  h += '</tbody></table></div>';
+
+  $('wow').innerHTML = h;
+
+  const days = w.days.map(d=>d.d);
+  charts.wowSales = new Chart($('wowSalesChart'),{
+    type:'bar',
+    data:{labels:days, datasets:[
+      {label:p.label, data:p.days.map(d=>parseFloat(d.sales.toFixed(2))), backgroundColor:'rgba(224,206,171,0.7)', borderColor:'#6B4226', borderWidth:1.5, borderRadius:2},
+      {label:w.label, data:w.days.map(d=>parseFloat(d.sales.toFixed(2))), backgroundColor:'rgba(59,83,35,0.7)',   borderColor:'#3B5323', borderWidth:1.5, borderRadius:2},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${f$(c.parsed.y)}`}}},
+      scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k'},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}
+  });
+  charts.wowLabor = new Chart($('wowLaborChart'),{
+    type:'line',
+    data:{labels:days, datasets:[
+      {label:p.label, data:p.days.map(d=>parseFloat((d.lpct*100).toFixed(1))), borderColor:'#A0844A', borderWidth:2, pointRadius:3, pointBackgroundColor:'#A0844A', tension:0.3, borderDash:[4,2]},
+      {label:w.label, data:w.days.map(d=>parseFloat((d.lpct*100).toFixed(1))), borderColor:'#3B5323', borderWidth:2, pointRadius:3, pointBackgroundColor:'#3B5323', tension:0.3},
+      {label:'22% Goal', data:Array(7).fill(22), borderColor:'#B71C1C', borderWidth:1.5, pointRadius:0, borderDash:[5,3], tension:0},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y}%`}}},
+      scales:{y:{min:0,max:40,ticks:{callback:v=>v+'%',stepSize:10},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false}}}}
+  });
+}
+
+function renderSentiment(wk){
+  const w = WEEKS[wk];
+  const s = w.sentiment;
+  if(!s){
+    $('sentiment').innerHTML = '<div class="empty"><p>No sentiment data available for this week.</p><p style="margin-top:6px;font-size:12px">Upload the Customer Sentiment workbook to add this data.</p></div>';
+    return;
+  }
+
+  const scoreColor = avg => avg >= 4.5 ? '#1B5E20' : avg >= 3.5 ? '#856404' : '#B71C1C';
+  const scoreBg    = avg => avg >= 4.5 ? '#E8F5E9' : avg >= 3.5 ? '#FFF3CD' : '#FDECEA';
+  const starBar    = (count, total, color) => {
+    const pct = total ? (count/total*100).toFixed(0) : 0;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px">
+      <span style="width:28px;text-align:right;color:var(--color-text-secondary)">${pct}%</span>
+      <div style="flex:1;height:8px;background:var(--tan-xlight);border-radius:4px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${color};border-radius:4px"></div>
+      </div>
+      <span style="width:20px;color:var(--color-text-secondary)">${count}</span>
+    </div>`;
+  };
+
+  const catColors = {
+    'Accuracy':       '#B71C1C',
+    'Product Quality':'#856404',
+    'Hospitality':    '#3B5323',
+    'Speed':          '#185FA5',
+  };
+
+  let h = `<div class="metrics">
+    <div class="metric"><div class="metric-label">Total Responses</div><div class="metric-value">${s.totalResponses}</div></div>
+    <div class="metric"><div class="metric-label">Overall Avg Score</div><div class="metric-value" style="color:${scoreColor(s.avgScore)}">${s.avgScore.toFixed(2)}</div><div class="metric-sub">/5.0</div></div>
+    <div class="metric"><div class="metric-label">5-Star Responses</div><div class="metric-value" style="color:#1B5E20">${s.fiveStar}</div><div class="metric-sub">${(s.fiveStar/s.totalResponses*100).toFixed(0)}% of total</div></div>
+    <div class="metric"><div class="metric-label">Low Scores (1\u20133)</div><div class="metric-value" style="color:${s.lowStar>0?'#B71C1C':'#1B5E20'}">${s.lowStar}</div><div class="metric-sub">${(s.lowStar/s.totalResponses*100).toFixed(0)}% of total</div></div>
+    <div class="metric"><div class="metric-label">With Feedback</div><div class="metric-value">${s.withFeedback}</div><div class="metric-sub">${(s.withFeedback/s.totalResponses*100).toFixed(0)}% feedback rate</div></div>
+  </div>`;
+
+  h += '<div class="chart-grid">';
+
+  // Score distribution
+  h += `<div class="chart-card"><h3>Score distribution</h3>
+    <div style="margin-top:4px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-secondary);margin-bottom:8px"><span>5 star</span><span>4 star</span><span>1\u20133 star</span></div>
+      ${starBar(s.fiveStar, s.totalResponses, '#1B5E20')}
+      ${starBar(s.fourStar, s.totalResponses, '#856404')}
+      ${starBar(s.lowStar,  s.totalResponses, '#B71C1C')}
+    </div>
+    <div class="chart-wrap" style="height:200px;margin-top:12px"><canvas id="sentScoreChart" role="img" aria-label="Bar chart of average score by day of week">Score by day.</canvas></div>
+  </div>`;
+
+  // Day part breakdown
+  h += `<div class="chart-card"><h3>By day part</h3>`;
+  s.dayParts.forEach(dp => {
+    if(!dp.responses) return;
+    const bg = scoreBg(dp.avg); const fg = scoreColor(dp.avg);
+    h += `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-primary)">${dp.part}</span>
+        <span style="font-size:18px;font-weight:600;color:${fg}">${dp.avg.toFixed(2)}</span>
+      </div>
+      <div style="display:flex;gap:8px;font-size:11px;color:var(--color-text-secondary)">
+        <span>${dp.responses} responses</span>
+        <span>&middot;</span>
+        <span style="color:#1B5E20">${dp.five} five-star</span>
+        ${dp.low > 0 ? `<span>&middot;</span><span style="color:#B71C1C">${dp.low} low</span>` : ''}
+        ${dp.feedback > 0 ? `<span>&middot;</span><span>${dp.feedback} with feedback</span>` : ''}
+      </div>
+    </div>`;
+  });
+  h += '</div></div>';
+
+  // By day of week table
+  h += '<p class="section-title">Scores by day of week</p>';
+  h += '<div class="table-wrap"><table><thead><tr><th>Day</th><th>Responses</th><th>Avg Score</th><th>5-Star</th><th>4-Star</th><th>1\u20133 Star</th></tr></thead><tbody>';
+  s.byDay.forEach(d => {
+    const bg = scoreBg(d.avg); const fg = scoreColor(d.avg);
+    h += `<tr>
+      <td><strong>${d.d}</strong></td>
+      <td>${d.responses}</td>
+      <td><span class="badge" style="background:${bg};color:${fg}">${d.avg.toFixed(2)}</span></td>
+      <td style="color:#1B5E20;font-weight:${d.five>0?500:400}">${d.five}</td>
+      <td>${d.four}</td>
+      <td style="color:${d.low>0?'#B71C1C':'inherit'};font-weight:${d.low>0?500:400}">${d.low}</td>
+    </tr>`;
+  });
+  h += `<tr class="total-row"><td>Total</td><td>${s.totalResponses}</td><td><span class="badge" style="background:${scoreBg(s.avgScore)};color:${scoreColor(s.avgScore)}">${s.avgScore.toFixed(2)}</span></td><td style="color:#1B5E20">${s.fiveStar}</td><td>${s.fourStar}</td><td style="color:${s.lowStar>0?'#B71C1C':'inherit'}">${s.lowStar}</td></tr>`;
+  h += '</tbody></table></div>';
+
+  // Feedback detail
+  if(s.feedback && s.feedback.length){
+    h += '<p class="section-title">Feedback requiring attention</p>';
+    h += '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Score</th><th>Customer</th><th>Category</th><th>Summary</th></tr></thead><tbody>';
+    s.feedback.filter(f => f.score <= 4).forEach(f => {
+      const catColor = catColors[f.category] || '#3B5323';
+      const scoreStyle = f.score <= 3 ? 'color:#B71C1C;font-weight:600' : 'color:#856404';
+      h += `<tr>
+        <td style="color:var(--color-text-secondary)">${f.date}</td>
+        <td><span style="${scoreStyle}">${f.score}</span></td>
+        <td>${f.customer}</td>
+        <td><span class="badge" style="background:${catColor}22;color:${catColor}">${f.category}</span></td>
+        <td style="color:var(--color-text-secondary);font-size:12px">${f.summary}</td>
+      </tr>`;
+    });
+    h += '</tbody></table></div>';
+    h += '<p style="font-size:12px;color:var(--color-text-secondary);margin-top:8px">Category priority: Accuracy &gt; Product Quality &gt; Hospitality &gt; Speed. Only scores 4 and below with actionable feedback are shown.</p>';
+  }
+
+  $('sentiment').innerHTML = h;
+
+  const days = s.byDay.map(d=>d.d);
+  const avgs = s.byDay.map(d=>d.responses > 0 ? parseFloat(d.avg.toFixed(2)) : null);
+  const bgColors = s.byDay.map(d => d.responses > 0 ? scoreBg(d.avg) : '#F5F5F5');
+  const bdColors = s.byDay.map(d => d.responses > 0 ? scoreColor(d.avg) : '#CCCCCC');
+
+  charts.sentScore = new Chart($('sentScoreChart'), {
+    type:'bar',
+    data:{
+      labels: days,
+      datasets:[{
+        label:'Avg Score',
+        data: avgs,
+        backgroundColor: bgColors,
+        borderColor: bdColors,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.y != null ? 'Avg: '+c.parsed.y.toFixed(2) : 'No data'}}},
+      scales:{
+        y:{min:0, max:5, ticks:{stepSize:1}, grid:{color:'rgba(0,0,0,0.04)'}},
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+
+function getWeek(){ return $('weekSel').value; }
+function getCmp(){
+  const c1 = $('cmpSel').value;
+  const c2 = $('cmpSel2').value;
+  return c1 !== 'none' ? c1 : c2;
+}
+
+function syncSelects(changed){
+  const wk  = $('weekSel').value;
+  const cmp = changed === 'cmpSel' ? $('cmpSel').value : $('cmpSel2').value;
+  [$('cmpSel'),$('cmpSel2')].forEach(sel => {
+    if(!sel) return;
+    Array.from(sel.options).forEach(o => {
+      o.disabled = o.value !== 'none' && o.value === wk;
+    });
+    if(sel.id !== changed) sel.value = cmp;
+  });
+}
+
+function renderAll(){
+  destroyCharts();
+  const wk  = getWeek();
+  const cmp = getCmp();
+  const w   = WEEKS[wk];
+
+  const pageH2 = document.querySelector('#pageTitle h2');
+  if(pageH2) pageH2.textContent = TAB_LABELS[currentTab] || 'Summary';
+  const sub = $('pageSubtitle');
+  if(sub) sub.textContent = `${w.label} \u2014 ${w.dates}`;
+
+  $('weekSel').querySelectorAll('option').forEach(o => {
+    o.disabled = false;
+  });
+
+  renderSummary(wk, cmp);
+  renderLabor(wk);
+  renderSales(wk);
+  renderMix(wk);
+  renderDiscounts(wk);
+  renderVoids(wk);
+  renderWoW(wk, cmp);
+  renderSentiment(wk);
+}
+
+let currentTab = 'summary';
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    item.classList.add('active');
+    currentTab = item.dataset.tab;
+    $(currentTab).classList.add('active');
+    const pageH2 = document.querySelector('#pageTitle h2');
+    if(pageH2) pageH2.textContent = TAB_LABELS[currentTab] || '';
+    const compareRow = $('compareRow');
+    if(compareRow) compareRow.style.display = ['summary','wow'].includes(currentTab) ? 'flex' : 'none';
+  });
+});
+
+$('weekSel').addEventListener('change', () => { syncSelects('weekSel'); renderAll(); });
+$('cmpSel').addEventListener('change',  () => { syncSelects('cmpSel');  renderAll(); });
+$('cmpSel2').addEventListener('change', () => { syncSelects('cmpSel2'); renderAll(); });
+
+syncSelects('weekSel');
+renderAll();
+</script>
+</body>
+</html>
