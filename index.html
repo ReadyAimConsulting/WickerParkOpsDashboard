@@ -1165,8 +1165,8 @@ function renderVoids(wk){
   const hasError    = w.voidItems.some(v=>v.reason.includes('Error'));
   const trainAmt    = w.voidItems.find(v=>v.reason.includes('Training'));
   const errAmt      = w.voidItems.find(v=>v.reason.includes('Error'));
-  if(hasTraining) h += `<strong>Testing/Training flag:</strong> ${trainAmt.items} Training void item(s) totaling $${trainAmt.amt.toFixed(2)} this week. Review with management to confirm intent. `;
-  if(hasError)    h += `<strong>Server Error voids:</strong> ${errAmt.items} item(s) totaling $${errAmt.amt.toFixed(2)} represent controllable loss from order entry mistakes. Review with the responsible server. `;
+  if(hasTraining) h += `<strong>Testing/Training flag:</strong> ${trainAmt.items} Training void item(s) totaling $${trainAmt.amt.toFixed(2)} this week. Review with leadership to confirm intent. `;
+  if(hasError)    h += `<strong>Server Error voids:</strong> ${errAmt.items} item(s) totaling $${errAmt.amt.toFixed(2)} represent controllable loss from order entry mistakes. Review with the responsible crew member. `;
   if(!hasTraining && !hasError) h += 'No Training or Server Error voids this week.';
   h += '</p>';
 
