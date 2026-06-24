@@ -634,7 +634,7 @@ const WEEKS = {
       {name:'King, Matthew',  role:'Shift Leader', hrs:1.07, pay:28.03, note:''},
     ],
     obs:[
-      ['Sales Volume','Net sales of $30,664 across 1,635 orders at an $18.75 average check. Friday drove $8,021 \u2014 the highest single day in the dataset. Monday through Thursday ran below $3,650 each.'],
+      ['Sales Volume','Net sales of $30,664 across 1,635 orders at an $18.75 average check. Friday drove $8,021  -  the highest single day in the dataset. Monday through Thursday ran below $3,650 each.'],
       ['Labor','Hourly labor at 24.7% of net sales. Monday, Tuesday, and Wednesday all exceeded the 26% threshold. Friday and Saturday were the most efficient days at 20.8% and 19.2% respectively.'],
       ['Discounts','Total discounts of $2,430 (7.9% of sales). Happy Hour accounts for 45.6% of all discount dollars. Manager comp combined totaled $367.74 across 31 transactions.'],
       ['Voids','No void detail available for Week 1. Add the Void Details report to the pull list to track weekly void activity.'],
@@ -698,13 +698,13 @@ const WEEKS = {
       {reason:'Testing / Training',    items:5,  amt:20.00},
     ],
     otEmployees:[
-      {name:'Custer, Teagan',role:'GM',           hrs:8.47, pay:null,  note:'Salaried \u2014 no OT pay'},
+      {name:'Custer, Teagan',role:'GM',           hrs:8.47, pay:null,  note:'Salaried  -  no OT pay'},
       {name:'Kier, Hailey',  role:'Crew',          hrs:0.89, pay:22.23, note:''},
     ],
     obs:[
       ['Sales Volume','Net sales of $31,362 across 1,558 orders at a $20.13 average check. Friday and Saturday combined drove 39.7% of weekly revenue. Average check improved $1.38 vs. Week 1 (+7.4%).'],
-      ['Labor','Hourly labor at 22.3% \u2014 a 2.4-point improvement over Week 1. Only Tuesday exceeded the 26% threshold. Saturday and Sunday were the most efficient days at 19.2% and 18.5%.'],
-      ['Discounts','Total discounts of $1,912 (6.1% of sales) \u2014 down $517 vs. Week 1. Happy Hour remains the dominant program. Manager comp combined: $256.50 across 21 transactions.'],
+      ['Labor','Hourly labor at 22.3%  -  a 2.4-point improvement over Week 1. Only Tuesday exceeded the 26% threshold. Saturday and Sunday were the most efficient days at 19.2% and 18.5%.'],
+      ['Discounts','Total discounts of $1,912 (6.1% of sales)  -  down $517 vs. Week 1. Happy Hour remains the dominant program. Manager comp combined: $256.50 across 21 transactions.'],
       ['Voids','$169.57 in voids across 21 orders. Server Error ($28.49) and Testing/Training ($20.00) are the highest-priority categories. Kyle Ringham approved $68.18 across 16 void items.'],
     ],
     sentiment: {
@@ -798,15 +798,15 @@ const WEEKS = {
       {reason:'86ed',                  items:2,  amt:8.19},
     ],
     otEmployees:[
-      {name:'Custer, Teagan', role:'GM',           hrs:0.29, pay:null,  note:'Salaried \u2014 no OT pay'},
-      {name:'Gant, Devante',  role:'AGM',           hrs:3.91, pay:null,  note:'Salaried \u2014 no OT pay'},
+      {name:'Custer, Teagan', role:'GM',           hrs:0.29, pay:null,  note:'Salaried  -  no OT pay'},
+      {name:'Gant, Devante',  role:'AGM',           hrs:3.91, pay:null,  note:'Salaried  -  no OT pay'},
       {name:'Slattum, Evan',  role:'Shift Leader',  hrs:2.13, pay:59.11, note:''},
     ],
     obs:[
       ['Sales Volume','Net sales of $31,101 across 1,553 orders at a $20.03 average check. Saturday was the strongest day at $7,373 (+24.5% vs. Week 2). Wednesday was the softest at $2,857. Friday and Saturday combined drove 44.6% of weekly revenue.'],
-      ['Labor','Hourly labor at 22.1% of net sales \u2014 a slight improvement from Week 2\u2019s 22.3%. Only Slattum, E. generated billable OT ($59.11, 2.13 hrs). Tuesday, Wednesday, and Sunday all exceeded the 26% threshold, all lower-volume days. Saturday was the most efficient at 16.9%.'],
+      ['Labor','Hourly labor at 22.1% of net sales  -  a slight improvement from Week 2\u2019s 22.3%. Only Slattum, E. generated billable OT ($59.11, 2.13 hrs). Tuesday, Wednesday, and Sunday all exceeded the 26% threshold, all lower-volume days. Saturday was the most efficient at 16.9%.'],
       ['Discounts','Total discounts of $1,977 (6.4% of sales), up modestly from Week 2\u2019s $1,912. Happy Hour continues to dominate at $978.75 across 95 orders. Manager comp combined: $155.47 across 16 transactions.'],
-      ['Voids','$382.99 in voids across 35 orders \u2014 more than double Week 2. Campbell Crose had the highest void amount ($153.26, 29 items), concentrated on Monday 6/15. Server Error voids ($89.86, 16 items) are elevated. A new void reason \u201886ed\u2019 appeared this week ($8.19, 2 items), indicating items not available for service.'],
+      ['Voids','$382.99 in voids across 35 orders  -  more than double Week 2. Campbell Crose had the highest void amount ($153.26, 29 items), concentrated on Monday 6/15. Server Error voids ($89.86, 16 items) are elevated. A new void reason \u201886ed\u2019 appeared this week ($8.19, 2 items), indicating items not available for service.'],
     ],
     sentiment: {
       totalResponses: 29,
@@ -922,15 +922,15 @@ function renderLabor(wk){
   h += '<div class="table-wrap"><table><thead><tr><th>Role</th><th>Hours</th><th>Labor Cost</th><th>% of Labor</th><th>OT Hours</th><th>OT Pay</th></tr></thead><tbody>';
   const hourlyRoles = w.roles.filter(r=>!r.salaried);
   hourlyRoles.forEach(r => {
-    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : '&mdash;';
-    const otPCell = r.otPay > 0 ? `<span class="badge badge-amb">${f$(r.otPay)}</span>` : '&mdash;';
+    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : ' - ';
+    const otPCell = r.otPay > 0 ? `<span class="badge badge-amb">${f$(r.otPay)}</span>` : ' - ';
     h += `<tr><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td>${f$(r.pay)}</td><td>${fp(r.pct)}</td><td>${otHCell}</td><td>${otPCell}</td></tr>`;
   });
   const totH = hourlyRoles.reduce((s,r)=>s+r.hrs,0);
   h += `<tr class="total-row"><td>Total (hourly)</td><td>${totH.toFixed(1)}</td><td>${f$(w.labor)}</td><td>100%</td><td>${w.otHrs.toFixed(2)}</td><td>${f$(w.otPay)}</td></tr>`;
   w.roles.filter(r=>r.salaried).forEach(r => {
-    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : '&mdash;';
-    h += `<tr style="opacity:.6"><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td><em style="color:#aaa">Salaried</em></td><td>&mdash;</td><td>${otHCell}</td><td>&mdash;</td></tr>`;
+    const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : ' - ';
+    h += `<tr style="opacity:.6"><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td><em style="color:#aaa">Salaried</em></td><td> - </td><td>${otHCell}</td><td> - </td></tr>`;
   });
   h += '</tbody></table></div>';
 
@@ -939,7 +939,7 @@ function renderLabor(wk){
     h += '<div class="table-wrap"><table><thead><tr><th>Employee</th><th>Role</th><th>OT Hours</th><th>OT Pay</th><th>Notes</th></tr></thead><tbody>';
     w.otEmployees.forEach(e => {
       const pay = e.pay != null ? `<span class="badge badge-amb">${f$(e.pay)}</span>` : '<em style="color:#aaa">N/A (salaried)</em>';
-      const hrs = e.hrs > 0 ? `<span class="badge badge-amb">${e.hrs.toFixed(2)}</span>` : '&mdash;';
+      const hrs = e.hrs > 0 ? `<span class="badge badge-amb">${e.hrs.toFixed(2)}</span>` : ' - ';
       h += `<tr><td><strong>${e.name}</strong></td><td>${e.role}</td><td>${hrs}</td><td>${pay}</td><td style="color:#888;font-style:italic">${e.note}</td></tr>`;
     });
     h += '</tbody></table></div>';
@@ -1161,9 +1161,14 @@ function renderVoids(wk){
   </div>`;
 
   h += '<p style="font-size:13px;color:#555;line-height:1.6;padding:14px 16px;background:var(--tan-xlight);border-radius:8px;border-left:3px solid #3B5323">';
-  h += '<strong>Key flag:</strong> Kyle Ringham approved the most voids by dollar value ($68.18 across 16 items). ';
-  h += 'Testing/Training voids ($20.00) indicate possible staff training or system testing outside normal hours &mdash; the Trace Alchin/Skyy Gant pattern at 2:36 AM on 6/14 should be reviewed. ';
-  h += 'Server Error voids ($28.49) represent controllable loss from order entry mistakes.</p>';
+  const hasTraining = w.voidItems.some(v=>v.reason.includes('Training'));
+  const hasError    = w.voidItems.some(v=>v.reason.includes('Error'));
+  const trainAmt    = w.voidItems.find(v=>v.reason.includes('Training'));
+  const errAmt      = w.voidItems.find(v=>v.reason.includes('Error'));
+  if(hasTraining) h += `<strong>Testing/Training flag:</strong> ${trainAmt.items} Training void item(s) totaling $${trainAmt.amt.toFixed(2)} this week. Review with management to confirm intent. `;
+  if(hasError)    h += `<strong>Server Error voids:</strong> ${errAmt.items} item(s) totaling $${errAmt.amt.toFixed(2)} represent controllable loss from order entry mistakes. Review with the responsible server. `;
+  if(!hasTraining && !hasError) h += 'No Training or Server Error voids this week.';
+  h += '</p>';
 
   $('voids').innerHTML = h;
 
@@ -1210,11 +1215,11 @@ function renderWoW(wk, cmp){
   h += '</div>';
 
   h += '<div class="chart-grid">';
-  h += `<div class="chart-card"><h3>Sales by day &mdash; both weeks</h3>
+  h += `<div class="chart-card"><h3>Sales by day: both weeks</h3>
     <div class="legend"><span><span class="legend-sq" style="background:#E0CEAB"></span>${p.label}</span><span><span class="legend-sq" style="background:#3B5323"></span>${w.label}</span></div>
     <div class="chart-wrap"><canvas id="wowSalesChart" role="img" aria-label="Grouped bar chart comparing net sales by day for two weeks">Week over week sales by day.</canvas></div>
   </div>`;
-  h += `<div class="chart-card"><h3>Labor % by day &mdash; both weeks</h3>
+  h += `<div class="chart-card"><h3>Labor % by day: both weeks</h3>
     <div class="legend"><span><span class="legend-sq" style="background:#A0844A"></span>${p.label}</span><span><span class="legend-sq" style="background:#3B5323"></span>${w.label}</span><span><span class="legend-line" style="background:#B71C1C"></span>22% goal</span></div>
     <div class="chart-wrap"><canvas id="wowLaborChart" role="img" aria-label="Line chart comparing labor percentage by day for two weeks">Week over week labor %.</canvas></div>
   </div>`;
@@ -1428,7 +1433,7 @@ function renderAll(){
   const pageH2 = document.querySelector('#pageTitle h2');
   if(pageH2) pageH2.textContent = TAB_LABELS[currentTab] || 'Summary';
   const sub = $('pageSubtitle');
-  if(sub) sub.textContent = `${w.label} \u2014 ${w.dates}`;
+  if(sub) sub.textContent = `${w.label}  -  ${w.dates}`;
 
   $('weekSel').querySelectorAll('option').forEach(o => {
     o.disabled = false;
