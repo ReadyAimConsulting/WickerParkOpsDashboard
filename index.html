@@ -493,14 +493,16 @@
     <select id="weekSel" aria-label="Select reporting week">
       <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
       <option value="w2">Week 2 &mdash; Jun 8&ndash;14</option>
-      <option value="w3" selected>Week 3 &mdash; Jun 15&ndash;21</option>
+      <option value="w3">Week 3 &mdash; Jun 15&ndash;21</option>
+      <option value="w4" selected>Week 4 &mdash; Jun 22&ndash;28</option>
     </select>
     <label for="cmpSel" style="margin-top:10px">Compare to</label>
     <select id="cmpSel" aria-label="Select comparison week">
       <option value="none">&mdash; none &mdash;</option>
       <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
-      <option value="w2" selected>Week 2 &mdash; Jun 8&ndash;14</option>
-      <option value="w3">Week 3 &mdash; Jun 15&ndash;21</option>
+      <option value="w2">Week 2 &mdash; Jun 8&ndash;14</option>
+      <option value="w3" selected>Week 3 &mdash; Jun 15&ndash;21</option>
+      <option value="w4">Week 4 &mdash; Jun 22&ndash;28</option>
     </select>
   </div>
 
@@ -557,8 +559,9 @@
       <select id="cmpSel2" aria-label="Compare to week">
         <option value="none">&mdash; none &mdash;</option>
         <option value="w1">Week 1 &mdash; Jun 1&ndash;7</option>
-        <option value="w2" selected>Week 2 &mdash; Jun 8&ndash;14</option>
-        <option value="w3">Week 3 &mdash; Jun 15&ndash;21</option>
+        <option value="w2">Week 2 &mdash; Jun 8&ndash;14</option>
+        <option value="w3" selected>Week 3 &mdash; Jun 15&ndash;21</option>
+        <option value="w4">Week 4 &mdash; Jun 22&ndash;28</option>
       </select>
     </div>
   </div>
@@ -600,7 +603,7 @@ const WEEKS = {
       {role:'Bartender',    hrs:55.80,  pay:703.41,  pct:0.056, otHrs:0,    otPay:0,     salaried:false},
       {role:'Trainer',      hrs:6.10,   pay:103.70,  pct:0.008, otHrs:0,    otPay:0,     salaried:false},
       {role:'GM (salaried)',hrs:42.10,  pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
-      {role:'AGM (salaried)',hrs:31.80, pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
+      {role:'AGM',hrs:31.80, pay:715.50,  pct:null,  otHrs:0,    otPay:null,  salaried:true},
     ],
     mix:[
       {ch:'In-Shop',    net:15989.07, grp:'In-House'},
@@ -664,7 +667,7 @@ const WEEKS = {
       {role:'Bar Lead',     hrs:26.98,  pay:404.70,  pct:0.058, otHrs:0,    otPay:0,     salaried:false},
       {role:'Bartender',    hrs:64.36,  pay:820.67,  pct:0.117, otHrs:0,    otPay:0,     salaried:false},
       {role:'GM (salaried)',hrs:48.47,  pay:null,    pct:null,  otHrs:8.47, otPay:null,  salaried:true},
-      {role:'AGM (salaried)',hrs:22.08, pay:null,    pct:null,  otHrs:0,    otPay:null,  salaried:true},
+      {role:'AGM',hrs:22.08, pay:496.80,  pct:null,  otHrs:0,    otPay:null,  salaried:true},
     ],
     mix:[
       {ch:'In-Shop',    net:16054.79, grp:'In-House'},
@@ -761,7 +764,7 @@ const WEEKS = {
       {role:'Bar Lead',     hrs:30.85,  pay:462.75,  pct:0.0674, otHrs:0,    otPay:0,     salaried:false},
       {role:'Bartender',    hrs:65.19,  pay:834.57,  pct:0.1215, otHrs:0,    otPay:0,     salaried:false},
       {role:'GM (salaried)',hrs:29.96,  pay:null,    pct:null,   otHrs:0.29, otPay:null,  salaried:true},
-      {role:'AGM (salaried)',hrs:34.95, pay:null,    pct:null,   otHrs:3.91, otPay:null,  salaried:true},
+      {role:'AGM',hrs:34.95, pay:786.38,  pct:null,   otHrs:3.91, otPay:null,  salaried:true},
     ],
     mix:[
       {ch:'In-Shop',      net:12728.36, grp:'In-House'},
@@ -799,7 +802,7 @@ const WEEKS = {
     ],
     otEmployees:[
       {name:'Custer, Teagan', role:'GM',           hrs:0.29, pay:null,  note:'Salaried  -  no OT pay'},
-      {name:'Gant, Devante',  role:'AGM',           hrs:3.91, pay:null,  note:'Salaried  -  no OT pay'},
+      {name:'Gant, Devante',  role:'AGM',           hrs:3.91, pay:null,  note:'Not paid OT in Toast'},
       {name:'Slattum, Evan',  role:'Shift Leader',  hrs:2.13, pay:59.11, note:''},
     ],
     obs:[
@@ -838,6 +841,108 @@ const WEEKS = {
       ],
     },
   },
+  w4: {
+    label:'Week 4',
+    dates:'Jun 22\u201328, 2026',
+    netSales:29670.58, orders:1553, avgCheck:19.1053,
+    labor:6871.81, laborPct:0.2316, totalHrs:479.45,
+    regHrs:409.37, otHrs:0.81, otPay:21.26,
+    discounts:2042.36, discPct:0.0688,
+    voidTotal:428.65, voidOrders:36,
+    days:[
+      {d:'Mon',sales:2839.72,orders:166,lpct:0.2618},
+      {d:'Tue',sales:3026.96,orders:133,lpct:0.3234},
+      {d:'Wed',sales:3310.03,orders:173,lpct:0.2379},
+      {d:'Thu',sales:4162.41,orders:250,lpct:0.2351},
+      {d:'Fri',sales:5369.26,orders:296,lpct:0.2310},
+      {d:'Sat',sales:6528.91,orders:327,lpct:0.1630},
+      {d:'Sun',sales:4433.29,orders:208,lpct:0.2440},
+    ],
+    roles:[
+      {role:'Crew',         hrs:232.03, pay:3912.46, pct:0.5693, otHrs:0.44, otPay:10.99, salaried:false},
+      {role:'Shift Leader', hrs:100.03, pay:1914.45, pct:0.2786, otHrs:0.37, otPay:10.27, salaried:false},
+      {role:'Bar Lead',     hrs:21.69,  pay:324.47,  pct:0.0472, otHrs:0,    otPay:0,     salaried:false},
+      {role:'Bartender',    hrs:56.43,  pay:721.42,  pct:0.1050, otHrs:0,    otPay:0,     salaried:false},
+      {role:'AGM',          hrs:29.62,  pay:666.45,  pct:0,      otHrs:0,    otPay:0,     salaried:true},
+      {role:'GM (salaried)',hrs:39.65,  pay:null,    pct:null,   otHrs:1.29, otPay:null,  salaried:true},
+    ],
+    mix:[
+      {ch:'In-Shop',    net:11776.57, grp:'In-House'},
+      {ch:'Bar',        net:3632.82,  grp:'In-House'},
+      {ch:'DoorDash',   net:6023.54,  grp:'Delivery'},
+      {ch:'UberEats',   net:2900.41,  grp:'Delivery'},
+      {ch:'GrubHub',    net:874.61,   grp:'Delivery'},
+      {ch:'Dispatch',   net:1118.19,  grp:'Delivery'},
+      {ch:'OLO',        net:3344.44,  grp:'OLO & Catering'},
+    ],
+    dining:[
+      {opt:'Online Ordering',     orders:535, net:13986.22, disc:140.66,  gross:14126.88},
+      {opt:'Dine In',             orders:650, net:9022.70,  disc:1741.97, gross:10764.67},
+      {opt:'To Go',               orders:361, net:6296.39,  disc:104.07,  gross:6400.46},
+      {opt:'Olo Catering',        orders:1,   net:274.97,   disc:0,       gross:274.97},
+      {opt:'Dine In (Back Cart)', orders:3,   net:70.22,    disc:0,       gross:70.22},
+      {opt:'Pick Up',             orders:3,   net:20.08,    disc:30.66,   gross:50.74},
+    ],
+    discItems:[
+      {name:'Happy Hour',           amt:999.00,  orders:112, cat:'Menu Item'},
+      {name:'Free Nug Card',        amt:214.12,  orders:23,  cat:'Menu Item'},
+      {name:'Manager Comp \u2013 Item', amt:101.64, orders:12, cat:'Menu Item'},
+      {name:'$3 off Alcohol',       amt:33.00,   orders:5,   cat:'Menu Item'},
+      {name:'Employee Shift Drink', amt:46.00,   orders:4,   cat:'Menu Item'},
+      {name:'Free Munchie Card',    amt:17.65,   orders:5,   cat:'Menu Item'},
+      {name:'Hash Can Friday',      amt:12.00,   orders:3,   cat:'Menu Item'},
+      {name:'$2 off Alcohol',       amt:6.00,    orders:3,   cat:'Menu Item'},
+      {name:'Employee Shift Meal',  amt:410.81,  orders:47,  cat:'Check'},
+      {name:'Loyalty Reward',       amt:140.66,  orders:24,  cat:'Check'},
+      {name:'Manager Comp \u2013 Check', amt:45.49, orders:3, cat:'Check'},
+      {name:'$20 Bar Comp',         amt:15.99,   orders:1,   cat:'Check'},
+    ],
+    voidItems:[
+      {reason:'Customer Changed Mind', items:16, amt:136.26},
+      {reason:'Server Error',          items:24, amt:168.83},
+      {reason:'Testing / Training',    items:14, amt:112.47},
+      {reason:'86ed',                  items:2,  amt:11.09},
+    ],
+    otEmployees:[
+      {name:'Custer, Teagan', role:'GM',           hrs:1.29, pay:null,  note:'Salaried  -  no OT pay'},
+      {name:'Kier, Hailey',   role:'Crew',          hrs:0.44, pay:10.99, note:''},
+      {name:'Slattum, Evan',  role:'Shift Leader',  hrs:0.37, pay:10.27, note:''},
+    ],
+    obs:[
+      ['Sales Volume','Net sales of $29,671 across 1,553 orders at a $19.11 average check. Friday and Saturday combined generated $11,898, or 40.1% of weekly revenue. Sunday outperformed at $4,433, the third-highest day of the week. Monday was the softest at $2,840.'],
+      ['Labor','Hourly labor at 23.2% of net sales. Tuesday was the highest labor day at 32.3% against $3,027 in net sales due to a staff meeting. Monday (26.2%) also exceeded the 26% threshold. Saturday was the most efficient day at 16.3%. OT was minimal: Kier, H. (0.44 hrs, $10.99) and Slattum, E. (0.37 hrs, $10.27).'],
+      ['Discounts','Total discounts of $2,042 (6.9% of net sales). Happy Hour led at $999.00 across 112 orders. Employee Shift Meal totaled $410.81 across 47 transactions. Manager comp combined totaled $147.13 across 15 transactions. Note: a $25.00 discrepancy exists between discount CSV totals and Revenue Center/Dining Options exports; CSV source figures are used throughout.'],
+      ['Voids','$428.65 in voids across 36 orders and 56 items. Server Error voids were highest at $168.83 across 24 items, followed by Customer Changed Mind at $136.26 across 16 items. A Testing/Training cluster on Trace Alchin\u2019s shifts (6/27\u20136/28) totaled $79.79 across 9 items. Review with leadership to confirm intent on Testing/Training and with the responsible crew member on Server Error voids.'],
+    ],
+    sentiment: {
+      totalResponses: 34,
+      avgScore: 4.7647,
+      fiveStar: 29,
+      fourStar: 2,
+      lowStar: 3,
+      withFeedback: 3,
+      dayParts: [
+        {part:'Lunch (10AM\u20131:59PM)',    responses:14, avg:4.7857, five:12, four:1, low:1, feedback:0},
+        {part:'Afternoon (2\u20134:59PM)',   responses:9,  avg:4.6667, five:7,  four:1, low:1, feedback:2},
+        {part:'Dinner (5\u20138:59PM)',      responses:4,  avg:5.00,   five:4,  four:0, low:0, feedback:0},
+        {part:'Late Night / Other',          responses:7,  avg:4.7143, five:6,  four:0, low:1, feedback:1},
+      ],
+      byDay: [
+        {d:'Mon', responses:2, avg:5.00,   five:2, four:0, low:0},
+        {d:'Tue', responses:9, avg:4.7778, five:8, four:0, low:1},
+        {d:'Wed', responses:3, avg:4.6667, five:2, four:1, low:0},
+        {d:'Thu', responses:5, avg:5.00,   five:5, four:0, low:0},
+        {d:'Fri', responses:1, avg:5.00,   five:1, four:0, low:0},
+        {d:'Sat', responses:6, avg:5.00,   five:6, four:0, low:0},
+        {d:'Sun', responses:8, avg:4.375,  five:5, four:1, low:2},
+      ],
+      feedback: [
+        {date:'6/28',score:3,customer:'Jai',                category:'Product Quality', summary:'Garlic bread sandwich lacked enough garlic flavor'},
+        {date:'6/24',score:4,customer:'Evan Ensweiler',     category:'Product Quality', summary:'Avocado stale/brown; sandwich otherwise praised'},
+        {date:'6/23',score:3,customer:'Michael Arceo',      category:'Product Quality', summary:'Customer reported gastrointestinal distress after visit'},
+      ],
+    },
+  },
 };
 
 const TAB_LABELS = {
@@ -863,7 +968,7 @@ function badge(w1v, w2v, lowerGood){
 }
 
 function laborPill(pct){
-  if(pct > 0.26) return `<span class="pill-red">${fp(pct)}</span>`;
+  if(pct >= 0.26) return `<span class="pill-red">${fp(pct)}</span>`;
   if(pct > 0.22) return `<span class="pill-amb">${fp(pct)}</span>`;
   return `<span class="pill-grn">${fp(pct)}</span>`;
 }
@@ -884,7 +989,7 @@ function renderSummary(wk, cmp){
     {label:'Total Orders', val:fn(w.orders),      sub: p ? badge(p.orders,w.orders,false)+' vs '+p.label : ''},
     {label:'Avg Check',    val:f$(w.avgCheck),    sub: p ? badge(p.avgCheck,w.avgCheck,false)+' vs '+p.label : ''},
     {label:'Labor Cost',   val:f$(w.labor),       sub: p ? badge(p.labor,w.labor,true)+' vs '+p.label : fp(w.laborPct)+' of sales'},
-    {label:'Labor %',      val:fp(w.laborPct),    sub: p ? badge(p.laborPct,w.laborPct,true)+' vs '+p.label : (w.laborPct>0.26?'<span class="badge badge-red">Above 26% goal</span>':(w.laborPct>0.22?'<span class="badge badge-amb">22%\u201326% target range</span>':'<span class="badge badge-grn">At or below 22%</span>'))},
+    {label:'Labor %',      val:fp(w.laborPct),    sub: p ? badge(p.laborPct,w.laborPct,true)+' vs '+p.label : (w.laborPct>=0.26?'<span class="badge badge-red">Above 26% goal</span>':(w.laborPct>0.22?'<span class="badge badge-amb">22%\u201326% target range</span>':'<span class="badge badge-grn">At or below 22%</span>'))},
     {label:'Discounts',    val:f$(w.discounts),   sub: p ? badge(p.discounts,w.discounts,true)+' vs '+p.label : fp(w.discPct)+' of sales'},
   ];
   let h = '<div class="metrics">';
@@ -930,15 +1035,20 @@ function renderLabor(wk){
   h += `<tr class="total-row"><td>Total (hourly)</td><td>${totH.toFixed(1)}</td><td>${f$(w.labor)}</td><td>100%</td><td>${w.otHrs.toFixed(2)}</td><td>${f$(w.otPay)}</td></tr>`;
   w.roles.filter(r=>r.salaried).forEach(r => {
     const otHCell = r.otHrs > 0 ? `<span class="badge badge-amb">${r.otHrs.toFixed(2)}</span>` : ' - ';
-    h += `<tr style="opacity:.6"><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td><em style="color:#aaa">Salaried</em></td><td> - </td><td>${otHCell}</td><td> - </td></tr>`;
+    const payCell = r.pay != null ? `${f$(r.pay)}*` : '<em style="color:#aaa">Salaried</em>';
+    h += `<tr style="opacity:.6"><td>${r.role}</td><td>${r.hrs.toFixed(1)}</td><td>${payCell}</td><td> - </td><td>${otHCell}</td><td> - </td></tr>`;
   });
   h += '</tbody></table></div>';
+  if(w.roles.some(r=>r.salaried && r.pay != null)){
+    h += '<p style="font-size:12px;color:#888;margin-top:-12px;margin-bottom:20px">*AGM hourly wage shown for tracking purposes only, all data matches Toast payroll exports - Devante Gant\u2019s hours do not reflect hourly wages in Toast\u2019s data.</p>';
+  }
 
   if(w.otEmployees.length){
     h += '<p class="section-title">Overtime by employee</p>';
     h += '<div class="table-wrap"><table><thead><tr><th>Employee</th><th>Role</th><th>OT Hours</th><th>OT Pay</th><th>Notes</th></tr></thead><tbody>';
     w.otEmployees.forEach(e => {
-      const pay = e.pay != null ? `<span class="badge badge-amb">${f$(e.pay)}</span>` : '<em style="color:#aaa">N/A (salaried)</em>';
+      const isGant = e.name.includes('Gant');
+      const pay = e.pay != null ? `<span class="badge badge-amb">${f$(e.pay)}</span>` : (isGant ? ' - ' : '<em style="color:#aaa">N/A (salaried)</em>');
       const hrs = e.hrs > 0 ? `<span class="badge badge-amb">${e.hrs.toFixed(2)}</span>` : ' - ';
       h += `<tr><td><strong>${e.name}</strong></td><td>${e.role}</td><td>${hrs}</td><td>${pay}</td><td style="color:#888;font-style:italic">${e.note}</td></tr>`;
     });
@@ -949,8 +1059,8 @@ function renderLabor(wk){
 
   const labels = w.days.map(d=>d.d);
   const pcts   = w.days.map(d=>parseFloat((d.lpct*100).toFixed(1)));
-  const fills  = pcts.map(p => p>26 ? '#FDECEA' : (p>22 ? '#FFF3CD' : '#E8F5E9'));
-  const borders= pcts.map(p => p>26 ? '#B71C1C' : (p>22 ? '#856404' : '#1B5E20'));
+  const fills  = pcts.map(p => p>=26 ? '#FDECEA' : (p>22 ? '#FFF3CD' : '#E8F5E9'));
+  const borders= pcts.map(p => p>=26 ? '#B71C1C' : (p>22 ? '#856404' : '#1B5E20'));
 
   charts.laborBar = new Chart($('laborBarChart'),{
     type:'bar',
